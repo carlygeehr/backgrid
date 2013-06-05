@@ -124,7 +124,7 @@ describe("A ClientSideFilter", function () {
          {id: 3, name: "bob"}]);
   });
 
-  it("can perform a regex search on change, keyup and submit, and cancel on clicking the close button", function () {
+  it("can perform a regex search on keydown and submit, and cancel on clicking the close button", function () {
     var filter;
 
     runs(function () {
@@ -140,7 +140,7 @@ describe("A ClientSideFilter", function () {
     });
 
     runs(function () {
-      filter.$el.find(":text").val("bob").change();
+      filter.$el.find(":text").val("bob").keydown();
     });
     waitsFor(function () {
       return collection.length === 1;
@@ -173,7 +173,7 @@ describe("A ClientSideFilter", function () {
     });
 
     runs(function () {
-      filter.$el.find(":text").val("al").keyup();
+      filter.$el.find(":text").val("al").keydown();
     });
     waitsFor(function () {
       return collection.length === 2;
@@ -184,7 +184,7 @@ describe("A ClientSideFilter", function () {
     });
 
     runs(function () {
-      filter.$el.find(":text").val("alic bob").keyup();
+      filter.$el.find(":text").val("alic bob").keydown();
     });
     waitsFor(function () {
       return collection.length === 3;
@@ -206,7 +206,7 @@ describe("A ClientSideFilter", function () {
       });
       filter.render();
       collection.add({id: 4, name: "doug"});
-      filter.$el.find(":text").val("doug").change();
+      filter.$el.find(":text").val("doug").keydown();
     });
     waitsFor(function () {
       return collection.length === 1;
@@ -227,7 +227,7 @@ describe("A ClientSideFilter", function () {
       });
       filter.render();
       collection.remove(collection.at(0));
-      filter.$el.find(":text").val("alice").change();
+      filter.$el.find(":text").val("alice").keydown();
     });
     waitsFor(function () {
       return collection.length === 0;
@@ -250,7 +250,7 @@ describe("A ClientSideFilter", function () {
       });
       filter.render();
       filter.collection.at(0).set("name", "charlie");
-      filter.$el.find(":text").val("charlie").change();
+      filter.$el.find(":text").val("charlie").keydown();
     });
     waitsFor(function () {
       return collection.length === 1;
@@ -273,7 +273,7 @@ describe("A ClientSideFilter", function () {
       });
       filter.render();
       filter.collection.reset([{id: 4, name: "charlie"}, {id: 5, name: "doug"}]);
-      filter.$el.find(":text").val("").change();
+      filter.$el.find(":text").val("").keydown();
     });
     waitsFor(function () {
       return collection.length === 2;
@@ -304,7 +304,7 @@ describe("A LunrFilter", function () {
          {id: 2, name: "bob", bio: "he is fat but does not crap"}]);
   });
 
-  it("can perform a full-text search on change, keyup and submit, and cancel on clicking the close button", function () {
+  it("can perform a full-text search on keydown and submit, and cancel on clicking the close button", function () {
     var filter;
 
     runs(function () {
@@ -319,7 +319,7 @@ describe("A LunrFilter", function () {
     });
 
     runs(function () {
-      filter.$el.find(":text").val("crap").change();
+      filter.$el.find(":text").val("crap").keydown();
     });
     waitsFor(function () {
       return collection.length === 1;
@@ -351,7 +351,7 @@ describe("A LunrFilter", function () {
     });
 
     runs(function () {
-      filter.$el.find(":text").val("fat").keyup();
+      filter.$el.find(":text").val("fat").keydown();
     });
     waitsFor(function () {
       return collection.length === 2;
@@ -379,21 +379,21 @@ describe("A LunrFilter", function () {
     });
 
     runs(function () {
-      filter.$el.find(":text").val("crap").change();
+      filter.$el.find(":text").val("crap").keydown();
     });
     waitsFor(function () {
       return collection.length === 0;
     }, "collection.length to become 0", 500);
 
     runs(function () {
-      filter.$el.find(":text").val("alice").change();
+      filter.$el.find(":text").val("alice").keydown();
     });
     waitsFor(function () {
       return collection.length === 0;
     }, "collection.length to become 0", 500);
 
     runs(function () {
-      filter.$el.find(":text").val("charlie").change();
+      filter.$el.find(":text").val("charlie").keydown();
     });
     waitsFor(function () {
       return collection.length === 1;
@@ -403,7 +403,7 @@ describe("A LunrFilter", function () {
     });
 
     runs(function () {
-      filter.$el.find(":text").val("doug").change();
+      filter.$el.find(":text").val("doug").keydown();
     });
     waitsFor(function () {
       return collection.length === 1 && collection.at(0).id === 4;
@@ -422,7 +422,7 @@ describe("A LunrFilter", function () {
     });
 
     runs(function () {
-      filter.$el.find(":text").val("charlie").change();
+      filter.$el.find(":text").val("charlie").keydown();
     });
     waitsFor(function () {
       return collection.length === 1;
@@ -444,14 +444,14 @@ describe("A LunrFilter", function () {
     });
 
     runs(function () {
-      filter.$el.find(":text").val("bob").change();
+      filter.$el.find(":text").val("bob").keydown();
     });
     waitsFor(function () {
       return collection.length === 0;
     }, "collection.length to become 0", 500);
 
     runs(function () {
-      filter.$el.find(":text").val("alice").change();
+      filter.$el.find(":text").val("alice").keydown();
     });
     waitsFor(function () {
       return collection.length === 1;
@@ -474,14 +474,14 @@ describe("A LunrFilter", function () {
     });
 
     runs(function () {
-      filter.$el.find(":text").val("alice").change();
+      filter.$el.find(":text").val("alice").keydown();
     });
     waitsFor(function () {
       return collection.length === 0;
     }, "collection.length to become 0", 500);
 
     runs(function () {
-      filter.$el.find(":text").val("charlie").change();
+      filter.$el.find(":text").val("charlie").keydown();
     });
     waitsFor(function () {
       return collection.length === 1;
@@ -504,7 +504,7 @@ describe("A LunrFilter", function () {
     });
 
     runs(function() {
-      filter.$el.find(":text").val("crap").change();
+      filter.$el.find(":text").val("crap").keydown();
     });
     waitsFor(function () {
       return collection.length === 1;

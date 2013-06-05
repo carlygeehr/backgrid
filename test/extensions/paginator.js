@@ -27,6 +27,32 @@ describe("A Paginator", function () {
       paginator.render();
     });
 
+    it("#calculateWindow should return the correct start and end bound", function () {
+      var window = paginator._calculateWindow();
+      expect(window[0]).toBe(0);
+      expect(window[1]).toBe(3);
+
+      collection.fullCollection.pop();
+      var window = paginator._calculateWindow();
+      expect(window[0]).toBe(0);
+      expect(window[1]).toBe(2);
+
+      collection.fullCollection.pop();
+      var window = paginator._calculateWindow();
+      expect(window[0]).toBe(0);
+      expect(window[1]).toBe(2);
+
+      collection.fullCollection.shift();
+      var window = paginator._calculateWindow();
+      expect(window[0]).toBe(0);
+      expect(window[1]).toBe(1);
+
+      collection.fullCollection.reset();
+      var window = paginator._calculateWindow();
+      expect(window[0]).toBe(0);
+      expect(window[1]).toBe(1);
+    });
+
     it("renders 1 handle when the collection has <= 1 page", function () {
       paginator = new Backgrid.Extension.Paginator({
         collection: new Backbone.PageableCollection([], {
@@ -41,8 +67,8 @@ describe("A Paginator", function () {
       paginator.render();
 
       expect(paginator.$el.find("a").length).toBe(5);
-      expect(paginator.$el.find("a[title='No. 1']").length).toBe(1);
-      expect(paginator.$el.find("a[title='No. 2']").length).toBe(0);
+      expect(paginator.$el.find("a[title='Page 1']").length).toBe(1);
+      expect(paginator.$el.find("a[title='Page 2']").length).toBe(0);
 
       paginator = new Backgrid.Extension.Paginator({
         collection: new Backbone.PageableCollection([{id: 1}], {
@@ -57,8 +83,8 @@ describe("A Paginator", function () {
       paginator.render();
 
       expect(paginator.$el.find("a").length).toBe(5);
-      expect(paginator.$el.find("a[title='No. 1']").length).toBe(1);
-      expect(paginator.$el.find("a[title='No. 2']").length).toBe(0);
+      expect(paginator.$el.find("a[title='Page 1']").length).toBe(1);
+      expect(paginator.$el.find("a[title='Page 2']").length).toBe(0);
 
       paginator = new Backgrid.Extension.Paginator({
         collection: new Backbone.PageableCollection([{id: 1}, {id: 2}], {
@@ -73,8 +99,8 @@ describe("A Paginator", function () {
       paginator.render();
 
       expect(paginator.$el.find("a").length).toBe(5);
-      expect(paginator.$el.find("a[title='No. 1']").length).toBe(1);
-      expect(paginator.$el.find("a[title='No. 2']").length).toBe(0);
+      expect(paginator.$el.find("a[title='Page 1']").length).toBe(1);
+      expect(paginator.$el.find("a[title='Page 2']").length).toBe(0);
     });
 
     it("clicking on active or disabled page handles have no effect", function () {
@@ -162,20 +188,20 @@ describe("A Paginator", function () {
     it("refreshes upon row insertion", function () {
       collection.add([{id: 6}, {id: 7}]);
       expect(paginator.$el.find("a").length).toBe(8);
-      expect(paginator.$el.find("a[title='No. 4']").length).toBe(1);
+      expect(paginator.$el.find("a[title='Page 4']").length).toBe(1);
     });
 
     it("refreshes upon row removal", function () {
       collection.remove(collection.first());
       expect(paginator.$el.find("a").length).toBe(6);
-      expect(paginator.$el.find("a[title='No. 3']").length).toBe(0);
+      expect(paginator.$el.find("a[title='Page 3']").length).toBe(0);
     });
 
     it("refreshes upon collection reset", function () {
       collection.fullCollection.reset();
       expect(paginator.$el.find("a").length).toBe(5);
-      expect(paginator.$el.find("a[title='No. 1']").length).toBe(1);
-      expect(paginator.$el.find("a[title='No. 2']").length).toBe(0);
+      expect(paginator.$el.find("a[title='Page 1']").length).toBe(1);
+      expect(paginator.$el.find("a[title='Page 2']").length).toBe(0);
     });
 
     it("will go back to the first page on sort", function () {
@@ -321,21 +347,21 @@ describe("A Paginator", function () {
       paginator.render();
 
       expect(paginator.$el.find("a").length).toBe(5);
-      expect(paginator.$el.find("a[title='No. 1']").length).toBe(1);
-      expect(paginator.$el.find("a[title='No. 2']").length).toBe(0);
+      expect(paginator.$el.find("a[title='Page 1']").length).toBe(1);
+      expect(paginator.$el.find("a[title='Page 2']").length).toBe(0);
     });
 
     it("refreshes upon collection reset", function () {
       collection.reset([{id: 1}]);
       expect(paginator.$el.find("a").length).toBe(7);
-      expect(paginator.$el.find("a[title='No. 1']").length).toBe(1);
-      expect(paginator.$el.find("a[title='No. 2']").length).toBe(1);
-      expect(paginator.$el.find("a[title='No. 3']").length).toBe(1);
+      expect(paginator.$el.find("a[title='Page 1']").length).toBe(1);
+      expect(paginator.$el.find("a[title='Page 2']").length).toBe(1);
+      expect(paginator.$el.find("a[title='Page 3']").length).toBe(1);
     });
 
   });
 
-  describe("renders only the fast forward page handles", function () {
+  describe("renders only the control page handles declared", function () {
 
     beforeEach(function () {
       collection = new Backbone.PageableCollection([{id: 1}, {id: 2}, {id: 3}], {
@@ -353,28 +379,17 @@ describe("A Paginator", function () {
       paginator.render();
     });
 
-    it("in infinite mode", function () {
-      collection.switchMode("infinite", {models: collection.fullCollection.models});
-      paginator = new (Backgrid.Extension.Paginator.extend({
-        fastForwardHandleLabels: {
-          prev: "first",
-          next: "next"
-        }
-      }))({
-        collection: collection,
-        columns: [{name: "id", cell: "integer"}]
-      });
-      paginator.render();
-      expect(paginator.$el.find("a").length).toBe(2);
-      expect(paginator.$el.find("a").eq(0).html()).toBe("first");
-      expect(paginator.$el.find("a").eq(1).html()).toBe("next");
-    });
-
     it("defined under any mode", function () {
       paginator = new (Backgrid.Extension.Paginator.extend({
-        fastForwardHandleLabels: {
-          prev: "first",
-          next: "next"
+        controls: {
+          back: {
+            label: "prev",
+            title: "prev"
+          },
+          forward: {
+            label: "next",
+            title: "next"
+          }
         }
       }))({
         collection: collection,
@@ -382,7 +397,7 @@ describe("A Paginator", function () {
       });
       paginator.render();
       expect(paginator.$el.find("a").length).toBe(5);
-      expect(paginator.$el.find("a").eq(0).html()).toBe("first");
+      expect(paginator.$el.find("a").eq(0).html()).toBe("prev");
       expect(paginator.$el.find("a").eq(4).html()).toBe("next");
     });
   });
